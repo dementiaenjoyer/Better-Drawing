@@ -5,24 +5,26 @@ local DrawingObjects = { };
 local Drawing = getgenv().Drawing;
 local HookFunction = getgenv().hookfunction;
 
+local cleardrawcache = getgenv().cleardrawcache or (function()
+    local DrawingNew = nil; DrawingNew = hookfunction(Drawing.new, function(...)
+        local Object = DrawingNew(...);
+        DrawingObjects[#DrawingObjects + 1] = Object;
+
+        return Object;
+    end)
+
+    return function()
+        for _, Object in DrawingObjects do
+            Object:Destroy();
+        end
+
+        table.clear(DrawingObjects);
+    end
+end)();
+
 if not (HookFunction or Drawing) then
     return;
 end
-
-local function ClearObjects()
-    for _, Object in DrawingObjects do
-        Object:Destroy();
-    end
-
-    table.clear(DrawingObjects);
-end
-
-local OldDrawing = nil; OldDrawing = hookfunction(Drawing.new, function(...)
-    local Object = OldDrawing(...);
-    DrawingObjects[#DrawingObjects + 1] = Object;
-
-    return Object;
-end)
 
 local BetterDrawing = { }; do
     BetterDrawing.Update = tick();
@@ -33,7 +35,7 @@ local BetterDrawing = { }; do
         PreRender:Connect(function()
             Connection();
             PreRender:Wait();
-            ClearObjects();
+            cleardrawcache();
         end)
     end
 end
