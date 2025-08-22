@@ -5,11 +5,17 @@ local DrawingObjects = { };
 local Drawing = getgenv().Drawing;
 local HookFunction = getgenv().hookfunction;
 
+local Flag = "BETTER_DRAWING";
+
+if not (HookFunction or Drawing) then
+    return;
+end
+
 local cleardrawcache = getgenv().cleardrawcache or (function()
     local DrawingNew = nil; DrawingNew = hookfunction(Drawing.new, function(...)
         local Object = DrawingNew(...);
 
-        if (select(#{...}, ...) == "BETTER_DRAWING") then
+        if (select(#{...}, ...) == Flag) then
             DrawingObjects[#DrawingObjects + 1] = Object;
         end
 
@@ -25,11 +31,7 @@ local cleardrawcache = getgenv().cleardrawcache or (function()
     end
 end)();
 
-if not (HookFunction or Drawing) then
-    return;
-end
-
-local BetterDrawing = { FLAG = "BETTER_DRAWING" }; do
+local BetterDrawing = { FLAG = Flag }; do
     BetterDrawing.Update = tick();
 
     function BetterDrawing:Init(Connection)
@@ -38,6 +40,7 @@ local BetterDrawing = { FLAG = "BETTER_DRAWING" }; do
         PreRender:Connect(function()
             Connection();
             PreRender:Wait();
+            
             cleardrawcache();
         end)
     end
