@@ -1,4 +1,7 @@
+getgenv().cleardrawcache = nil; -- This isn't required, but leaving it out will cause it to use the default 'cleardrawcache' function, and that'll also clear all other Drawing objects aswell, not only the ones you use for esp.
+
 local BetterDrawing = loadstring(game:HttpGet("https://raw.githubusercontent.com/dementiaenjoyer/Better-Drawing/refs/heads/main/Main.lua"))();
+local DrawingFlag = BetterDrawing.FLAG;
 
 local Players = game:GetService("Players");
 local Workspace = game:GetService("Workspace");
@@ -31,10 +34,10 @@ local function Update()
 
         local Position = Vector2.new(Round(ScreenPosition.X - (Width / 2)), Round(ScreenPosition.Y - (Height / 2)));
 
-        local Outline = Drawing.new("Square");
+        local Outline = Drawing.new("Square",DrawingFlag );
         Outline.Visible = true;
 
-        local Box = Drawing.new("Square");
+        local Box = Drawing.new("Square", DrawingFlag);
         Box.Visible = true;
         
         -- Box
