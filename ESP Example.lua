@@ -34,7 +34,7 @@ local function Update()
 
         local Position = Vector2.new(Round(ScreenPosition.X - (Width / 2)), Round(ScreenPosition.Y - (Height / 2)));
 
-        local Outline = Drawing.new("Square",DrawingFlag );
+        local Outline = Drawing.new("Square", DrawingFlag);
         Outline.Visible = true;
 
         local Box = Drawing.new("Square", DrawingFlag);
