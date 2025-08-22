@@ -8,7 +8,10 @@ local HookFunction = getgenv().hookfunction;
 local cleardrawcache = getgenv().cleardrawcache or (function()
     local DrawingNew = nil; DrawingNew = hookfunction(Drawing.new, function(...)
         local Object = DrawingNew(...);
-        DrawingObjects[#DrawingObjects + 1] = Object;
+
+        if (select(#{...}, ...) == "BETTER_DRAWING") then
+            DrawingObjects[#DrawingObjects + 1] = Object;
+        end
 
         return Object;
     end)
@@ -26,7 +29,7 @@ if not (HookFunction or Drawing) then
     return;
 end
 
-local BetterDrawing = { }; do
+local BetterDrawing = { FLAG = "BETTER_DRAWING" }; do
     BetterDrawing.Update = tick();
 
     function BetterDrawing:Init(Connection)
