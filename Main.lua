@@ -12,10 +12,10 @@ if not (HookFunction or Drawing) then
 end
 
 local cleardrawcache = getgenv().cleardrawcache or (function()
-    local DrawingNew = nil; DrawingNew = hookfunction(Drawing.new, function(...)
-        local Object = DrawingNew(...);
+    local DrawingNew = nil; DrawingNew = hookfunction(Drawing.new, function(Type, PotentialFlag)
+        local Object = DrawingNew(Type);
 
-        if (select(#{...}, ...) == Flag) then
+        if (PotentialFlag == Flag) then
             DrawingObjects[#DrawingObjects + 1] = Object;
         end
 
@@ -31,19 +31,17 @@ local cleardrawcache = getgenv().cleardrawcache or (function()
     end
 end)();
 
-local BetterDrawing = { FLAG = Flag }; do
-    BetterDrawing.Update = tick();
+local BetterDrawing = { FLAG = Flag };
 
-    function BetterDrawing:Init(Connection)
-        local PreRender = RunService.PreRender;
+function BetterDrawing:Init(Connection)
+    local PreRender = RunService.PreRender;
 
-        PreRender:Connect(function()
-            Connection();
-            PreRender:Wait();
-            
-            cleardrawcache();
-        end)
-    end
+    PreRender:Connect(function()
+        Connection();
+        PreRender:Wait();
+        
+        cleardrawcache();
+    end)
 end
 
 return BetterDrawing;
