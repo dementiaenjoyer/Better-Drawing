@@ -13,7 +13,7 @@ if not (HookFunction or Drawing) then
 end
 
 local cleardrawcache = getgenv().cleardrawcache or (function()
-    local DrawingNew = Drawing.new; Drawing.new = function(Type, PotentialFlag)
+    local DrawingNew = nil; DrawingNew = hookfunction(Drawing.new, function(Type, PotentialFlag)
         local Object = DrawingNew(Type);
 
         if (PotentialFlag == Flag) then
@@ -21,7 +21,7 @@ local cleardrawcache = getgenv().cleardrawcache or (function()
         end
 
         return Object;
-    end
+    end)
 
     return function()
         for _, Object in DrawingObjects do
