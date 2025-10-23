@@ -60,7 +60,7 @@ do
     function BetterDrawing:Init(Connection)
         local PreRender = RunService.PreRender;
 
-        PreRender:Connect(function(DeltaTime)
+        return PreRender:Connect(function(DeltaTime)
             Connection(DeltaTime);
             PreRender:Wait();
 
