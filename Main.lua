@@ -58,13 +58,11 @@ do
     end
 
     function BetterDrawing:Init(Connection)
-        local PreSimulation = RunService.PreSimulation;
+        local RenderStepped = RunService.RenderStepped;
 
-        return PreSimulation:Connect(function(DeltaTime)
-            Connection(DeltaTime);
-            PreSimulation:Wait();
-
+        return RenderStepped:Connect(function(DeltaTime)
             cleardrawcache();
+            Connection(DeltaTime);
         end)
     end
 
