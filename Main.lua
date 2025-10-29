@@ -58,11 +58,11 @@ do
     end
 
     function BetterDrawing:Init(Connection)
-        local PreRender = RunService.PreRender;
+        local PreSimulation = RunService.PreSimulation;
 
-        return PreRender:Connect(function(DeltaTime)
+        return PreSimulation:Connect(function(DeltaTime)
             Connection(DeltaTime);
-            PreRender:Wait();
+            PreSimulation:Wait();
 
             cleardrawcache();
         end)
