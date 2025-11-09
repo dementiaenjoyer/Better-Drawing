@@ -60,7 +60,7 @@ do
     function BetterDrawing:Init(Connection)
         local RenderStepped = RunService.RenderStepped;
 
-        return RenderStepped:Connect(function(DeltaTime)
+        return RunService:BindToRenderStep("BetterDrawing", 2000, function()
             cleardrawcache();
             Connection(DeltaTime);
         end)
