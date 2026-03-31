@@ -1,90 +1,105 @@
-local RunService = game:GetService("RunService");
+local RunService = game:GetService( "RunService" );
 
 local Flag = "BETTER_DRAWING";
 
-local DrawingObjects = { };
 local BetterDrawing = { FLAG = Flag };
+local DrawingObjects = { };
 
-local Drawing = getgenv().Drawing;
-local HookFunction = getgenv().hookfunction;
+local HookFunction = getgenv( ).hookfunction;
+local Drawing = getgenv( ).Drawing;
 
-if not (HookFunction or Drawing) then
+if not ( HookFunction or Drawing ) then
     return;
 end
 
-local cleardrawcache = getgenv().cleardrawcache or (function()
-    local DrawingNew = nil; DrawingNew = hookfunction(Drawing.new, function(Type, PotentialFlag)
-        local Object = DrawingNew(Type);
+local TableInsert = table.insert;
+local Vector2New = Vector2.new;
+local TableClear = table.clear;
+local MathPow = math.pow;
 
-        if (PotentialFlag == Flag) then
-            table.insert(DrawingObjects, Object);
-        end
+local cleardrawcache = getgenv( ).cleardrawcache or ( function()
+    if ( not getgenv( ).IGNORE_HOOK ) then
+        local DrawingNew = nil; DrawingNew = hookfunction( Drawing.new, function( Type, PotentialFlag )
+            local Object = DrawingNew( Type );
 
-        return Object;
-    end)
+            if ( PotentialFlag == Flag ) then
+                TableInsert( DrawingObjects, Object );
+            end
 
-    return function()
-        for _, Object in DrawingObjects do
-            Object:Destroy();
-        end
-
-        table.clear(DrawingObjects);
+            return Object;
+        end )
     end
-end)();
 
--- Methods
+    return function( )
+        for _, Object in DrawingObjects do
+            Object:Destroy( );
+        end
+
+        TableClear( DrawingObjects );
+    end
+end )( );
+
+-- API
 do
     local Tween = { }; do
         local LinearInterpolation = { }; do
-            function LinearInterpolation:Any(Start, Destination, Time)
-                return Start + (Destination - Start) * Time;
+            function LinearInterpolation : Any( Start, Destination, Time )
+                return Start + ( Destination - Start ) * Time;
             end
 
-            function LinearInterpolation:Vector2(Start, Destination, Time)
-                return Vector2.new(self:Any(Start.X, Destination.X, Time), self:Any(Start.Y, Destination.Y, Time));
+            function LinearInterpolation : Vector2( Start, Destination, Time )
+                return Vector2New( self : Any( Start.X, Destination.X, Time ), self : Any( Start.Y, Destination.Y, Time ) );
             end
         end
 
-        function Tween:Cubic(T)
-            if (T < 0.5) then
-                return 4 * T * T * T;
-            else
-                local F = (2 * T) - 2;
-                return 0.5 * F * F * F + 1;
+        function Tween : SetValue( DrawingObject, Property, Destination, Time )
+            local Start, Class, StartTime = DrawingObject[ Property ], typeof( Destination ), tick( );
+
+            if ( not Start ) then
+                return;
             end
+
+            local Connection = nil; Connection = RunService.PreSimulation : Connect( function( )
+                local Elapsed = tick( ) - StartTime;
+                local Progress = Elapsed / Time;
+
+                DrawingObject[ Property ] = ( LinearInterpolation[ Class ] or LinearInterpolation.Any )( LinearInterpolation, Start, Destination, self : Cubic( Progress ) );
+
+                if ( Progress >= 1 ) then
+                    DrawingObject[ Property ] = Destination;
+                    Connection : Disconnect( );
+                end
+            end )
+        end
+
+        function Tween : Cubic( Value )
+            local Result = 4 * MathPow( Value, 3 );
+
+            if ( Value > .5 ) then
+                return ( .5 * MathPow( ( 2 * Value ) - 2, 3 ) ) + 1;
+            end
+
+            return Result;
         end
 
         Tween.LinearInterpolation = LinearInterpolation;
     end
 
-    function BetterDrawing:Init(Connection)
-        local RenderStepped = RunService.RenderStepped;
+    function BetterDrawing : Create( Class, Properties )
+        local DrawingObject = Drawing.new( Class );
 
-        return RunService:BindToRenderStep("BetterDrawing", 2000, function()
-            cleardrawcache();
-            Connection(DeltaTime);
-        end)
+        for Index, Value in Properties or { } do
+            DrawingObject[ Index ] = Value;
+        end
+
+        return DrawingObject, TableInsert( DrawingObjects, DrawingObject );
     end
 
-    function Tween:SetValue(DrawingObject, Property, Destination, Time)
-        local Start = DrawingObject[Property];
-
-        if (not Start) then
-            return;
-        end
-        
-        local StartTime = tick();
-        local Class = typeof(Destination);
-        
-        local Connection, LinearInterpolation = nil, self.LinearInterpolation; Connection = RunService.PreSimulation:Connect(function()
-            local Progress = (tick() - StartTime) / Time;
-            DrawingObject[Property] = (LinearInterpolation[Class] or LinearInterpolation.Any)(LinearInterpolation, Start, Destination, self:Cubic(Progress));
-
-            if (Progress >= 1) then
-                Connection:Disconnect();
-                DrawingObject[Property] = Destination;
-            end
-        end)
+    function BetterDrawing : Init( Connection )
+        return RunService:BindToRenderStep( "BetterDrawing", 2000, function( )
+            cleardrawcache( );
+            Connection( );
+        end )
     end
 
     BetterDrawing.Tween = Tween;
