@@ -97,8 +97,8 @@ do
 
     function BetterDrawing : Init( Connection )
         return RunService : BindToRenderStep( "BetterDrawing", 2000, function( )
-            Connection( );
             cleardrawcache( );
+            Connection( );
         end )
     end
 
