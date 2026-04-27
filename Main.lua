@@ -2,7 +2,7 @@ local RunService = game:GetService( "RunService" );
 
 local Flag = "BETTER_DRAWING";
 
-local BetterDrawing = { FLAG = Flag };
+local BetterDrawing = { FLAG = Flag, FRAME = 0 };
 local DrawingObjects = { };
 
 local HookFunction = getgenv( ).hookfunction;
@@ -97,8 +97,13 @@ do
 
     function BetterDrawing : Init( Connection )
         return RunService : BindToRenderStep( "BetterDrawing", 2000, function( )
-            cleardrawcache( );
+            if ( getgenv( ).FRAME_FIX ) and ( BetterDrawing.FRAME % 2 == 0 ) then
+                cleardrawcache( );
+            end
+
             Connection( );
+
+            BetterDrawing.FRAME += 1;
         end )
     end
 
