@@ -97,7 +97,7 @@ do
 
     function BetterDrawing : Init( Connection )
         return RunService : BindToRenderStep( "BetterDrawing", 2000, function( )
-            if ( getgenv( ).FRAME_FIX ) and ( BetterDrawing.FRAME % 2 == 0 ) then
+            if ( getgenv( ).FRAME_FIX ) and ( BetterDrawing.FRAME % 4 == 0 ) then
                 cleardrawcache( );
             end
 
