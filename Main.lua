@@ -90,9 +90,9 @@ do
 
         for Index, Value in Properties or { } do
             DrawingObject[ Index ] = Value;
-        end
+        end TableInsert( DrawingObjects, DrawingObject );
 
-        return DrawingObject, TableInsert( DrawingObjects, DrawingObject );
+        return DrawingObject
     end
 
     function BetterDrawing : Init( Connection )
