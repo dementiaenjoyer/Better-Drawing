@@ -92,7 +92,7 @@ do
             DrawingObject[ Index ] = Value;
         end TableInsert( DrawingObjects, DrawingObject );
 
-        return DrawingObject
+        return DrawingObject;
     end
 
     function BetterDrawing : Init( Connection )
